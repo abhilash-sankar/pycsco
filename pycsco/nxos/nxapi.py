@@ -129,11 +129,6 @@ class RespFetcher:
         self.username = username
         self.password = password
         self.url = url
-        #self.base64_str = base64.encodestring('%s:%s' % (username,
-        #                                      password)).replace('\n', '')
-	#bdata= b('%s:%s' % (username, password))
-        #self.base64_str = base64.b64encode(bdata)
-
         self.base64_str = base64.encodestring(('%s:%s' % (username,
                                               password)).encode()).decode('utf-8').replace('\n','')
 
