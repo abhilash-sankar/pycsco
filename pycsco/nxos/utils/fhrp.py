@@ -28,9 +28,9 @@ try:
     import xmltodict
     from pycsco.nxos.device import Device
 except ImportError as e:
-    print '*' * 30
-    print e
-    print '*' * 30
+    print(('*' * 30))
+    print (e)
+    print(('*' * 30))
 
 __all__ = []
 
@@ -181,4 +181,4 @@ if __name__ == "__main__":
     test = get_vrrp_existing(device, interface)
 
     import json
-    print json.dumps(test, indent=4)
+    print((json.dumps(test, indent=4)))

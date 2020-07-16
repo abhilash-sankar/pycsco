@@ -21,9 +21,9 @@ from pycsco.nxos.error import CLIError
 try:
     import xmltodict
 except ImportError as e:
-    print '*' * 30
-    print e
-    print '*' * 30
+    print(('*' * 30))
+    print (e)
+    print(('*' * 30))
 
 __all__ = ['get_igmp_defaults', 'get_igmp_global', 'get_igmp_snooping',
            'get_igmp_snooping_defaults', 'get_igmp_interface',
@@ -44,7 +44,7 @@ def get_igmp_defaults():
     args = dict(flush_routes=flush_routes,
                 enforce_rtr_alert=enforce_rtr_alert)
 
-    default = dict((param, value) for (param, value) in args.iteritems()
+    default = dict((param, value) for (param, value) in args.items()
                    if value is not None)
 
     return default
@@ -65,7 +65,7 @@ def config_igmp(delta):
         'enforce_rtr_alert': 'ip igmp enforce-router-alert'
     }
     commands = []
-    for key, value in delta.iteritems():
+    for key, value in delta.items():
         if value:
             command = CMDS.get(key)
         else:
@@ -159,7 +159,7 @@ def get_igmp_snooping(device):
 
     existing2.update(existing)
 
-    for k, v in existing2.iteritems():
+    for k, v in existing2.items():
         if v in ['true', 'enabled']:
             existing2[k] = True
         elif v in ['false', 'disabled']:
@@ -187,7 +187,7 @@ def get_igmp_snooping_defaults():
                 report_supp=report_supp, v3_report_supp=v3_report_supp,
                 group_timeout=group_timeout)
 
-    default = dict((param, value) for (param, value) in args.iteritems()
+    default = dict((param, value) for (param, value) in args.items()
                    if value is not None)
 
     return default
@@ -213,7 +213,7 @@ def config_igmp_snooping(delta, existing, default=False):
 
     commands = []
     command = None
-    for k, v in delta.iteritems():
+    for k, v in delta.items():
         if v:
             # this next check is funky & used when defaulting the group timeout
             # funky because there is technically no default, so we just need to
@@ -303,7 +303,7 @@ def get_igmp_interface(device, interface):
     new_staticoif = []
     temp = {}
     for counter, data in enumerate(staticoif):
-        for k, v in data.iteritems():
+        for k, v in data.items():
             if v:
                 temp[k] = v
         if temp:
@@ -353,7 +353,7 @@ def config_igmp_interface(delta, found_both, found_prefix):
     commands = []
     command = None
 
-    for k, v in delta.iteritems():
+    for k, v in delta.items():
         if k in ['source', 'oif_source'] or found_both or found_prefix:
             pass
         elif k == 'prefix':
@@ -389,7 +389,7 @@ def config_default_igmp_interface(existing, delta, found_both, found_prefix):
 
     commands = []
     proposed = get_igmp_interface_defaults()
-    delta = dict(set(proposed.iteritems()).difference(existing.iteritems()))
+    delta = dict(set(proposed.items()).difference(iter(existing.items())))
     if delta:
         command = config_igmp_interface(delta, found_both, found_prefix)
 
@@ -428,7 +428,7 @@ def get_igmp_interface_defaults():
                 group_timeout=group_timeout, report_llg=report_llg,
                 immediate_leave=immediate_leave)
 
-    default = dict((param, value) for (param, value) in args.iteritems()
+    default = dict((param, value) for (param, value) in args.items()
                    if value is not None)
 
     return default
@@ -498,7 +498,7 @@ def get_pim_interface(device, interface):
         get_data = result['ins_api']['outputs']['output']['body'].get(
             'TABLE_iod')['ROW_iod']
 
-        if isinstance(get_data.get('dr-priority'), unicode) or \
+        if isinstance(get_data.get('dr-priority'), str) or \
                 isinstance(get_data.get('dr-priority'), str):
             pim_interface['dr_prio'] = get_data.get('dr-priority')
         else:
@@ -527,7 +527,7 @@ def get_pim_interface(device, interface):
         if jp_in_policy == 'none configured':
             pim_interface['jp_policy_in'] = None
 
-        if isinstance(get_data.get('jp-out-policy-name'), unicode) or \
+        if isinstance(get_data.get('jp-out-policy-name'), str) or \
                 isinstance(get_data.get('jp-out-policy-name'), str):
             pim_interface['jp_policy_out'] = get_data.get('jp-out-policy-name')
         else:
@@ -655,7 +655,7 @@ def config_pim_interface(delta, existing, jp_bidir, isauth):
             if command:
                 commands.append(command)
 
-    for k, v in delta.iteritems():
+    for k, v in delta.items():
         if k in ['dr_prio', 'hello_interval', 'hello_auth_key', 'border',
                  'sparse']:
             if v:
@@ -733,7 +733,7 @@ def get_pim_interface_defaults():
                 hello_interval=hello_interval,
                 hello_auth_key=hello_auth_key)
 
-    default = dict((param, value) for (param, value) in args.iteritems()
+    default = dict((param, value) for (param, value) in args.items()
                    if value is not None)
 
     return default
@@ -765,7 +765,7 @@ def default_pim_interface_policies(existing, jp_bidir):
 
     elif not jp_bidir:
         command = None
-        for k, v in existing.iteritems():
+        for k, v in existing.items():
             if k == 'jp_policy_in':
                 if existing.get('jp_policy_in'):
                     if existing.get('jp_type_in') == 'prefix':
@@ -816,8 +816,8 @@ def config_pim_interface_defaults(existing, jp_bidir, isauth):
 
     # returns a dict
     defaults = get_pim_interface_defaults()
-    delta = dict(set(defaults.iteritems()).difference(
-                                                     existing.iteritems()))
+    delta = dict(set(defaults.items()).difference(
+                                                     iter(existing.items())))
     if delta:
         # returns a list
         command = config_pim_interface(delta, existing,

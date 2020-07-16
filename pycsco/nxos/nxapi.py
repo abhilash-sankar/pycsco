@@ -2,17 +2,23 @@
 # Copyright (C) 2013 Cisco Systems Inc.
 # All rights reserved
 try:
-    import urllib2
+    import urllib3
     import contextlib
     import base64
     import socket
-    import httplib
-    from httplib import HTTPConnection, HTTPS_PORT
+    import http.client
+    import urllib.request
+    from http.client import HTTPConnection, HTTPS_PORT
     import ssl
+    import io
+    import json
+    import requests
+    from requests.auth import HTTPBasicAuth
+
 except ImportError as e:
-    print '***************************'
-    print e
-    print '***************************'
+    print ('***************************')
+    print (e)
+    print ('***************************')
 
 
 class HTTPSConnection(HTTPConnection):
@@ -123,8 +129,13 @@ class RespFetcher:
         self.username = username
         self.password = password
         self.url = url
-        self.base64_str = base64.encodestring('%s:%s' % (username,
-                                              password)).replace('\n', '')
+        #self.base64_str = base64.encodestring('%s:%s' % (username,
+        #                                      password)).replace('\n', '')
+	#bdata= b('%s:%s' % (username, password))
+        #self.base64_str = base64.b64encode(bdata)
+
+        self.base64_str = base64.encodestring(('%s:%s' % (username,
+                                              password)).encode()).decode('utf-8').replace('\n','')
 
     def get_resp(
         self,
@@ -133,18 +144,18 @@ class RespFetcher:
         timeout,
     ):
 
-        req = urllib2.Request(self.url, req_str)
-        req.add_header('Authorization', 'Basic %s' % self.base64_str)
-        req.add_header('Cookie', '%s' % cookie)
-        try:
-            with contextlib.closing(urllib2.urlopen(req,
-                                    timeout=timeout)) as resp:
-                resp_str = resp.read()
-                resp_headers = resp.info()
-                return (resp_headers, resp_str)
-        except socket.timeout, e:
-            print 'Req timeout'
-            raise
+
+
+        auth= HTTPBasicAuth(self.username, self.password)
+        headers = {
+        	'Content-Type': 'application/xml',
+        	'Accept':'application/xml'
+        }
+        response =requests.post(self.url,data=req_str, headers=headers, auth=auth)
+
+        resp_str = response.text
+        resp_headers = response.headers
+        return (resp_headers, resp_str)
 
 
 class RespFetcherHttps:
@@ -169,17 +180,17 @@ class RespFetcherHttps:
         timeout,
     ):
 
-        req = urllib2.Request(self.url, req_str)
+        req = urllib.request.Request(self.url, req_str)
         req.add_header('Authorization', 'Basic %s' % self.base64_str)
         req.add_header('Cookie', '%s' % cookie)
         try:
-            with contextlib.closing(urllib2.urlopen(req,
+            with contextlib.closing(urllib.request.urlopen(req,
                                     timeout=timeout)) as resp:
                 resp_str = resp.read()
                 resp_headers = resp.info()
                 return (resp_headers, resp_str)
-        except socket.timeout, e:
-            print 'Req timeout'
+        except socket.timeout as e:
+            print ('Req timeout')
             raise
 
 

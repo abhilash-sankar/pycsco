@@ -20,12 +20,12 @@ try:
     import yaml
     import json
     from os.path import expanduser
-    from nxapi import NXAPI
-    from error import CLIError
+    from .nxapi import NXAPI
+    from .error import CLIError
 except ImportError as e:
-    print '***************************'
-    print e
-    print '***************************'
+    print ('***************************')
+    print (e)
+    print ('***************************')
 
 
 class Auth():

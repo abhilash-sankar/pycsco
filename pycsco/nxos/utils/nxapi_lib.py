@@ -29,9 +29,9 @@ try:
     import re
     from pycsco.nxos.error import CLIError
 except ImportError as e:
-    print '*' * 30
-    print e
-    print '*' * 30
+    print(('*' * 30))
+    print (e)
+    print(('*' * 30))
 
 __all__ = ['cmd_list_to_string', 'create_dir', 'feature_enabled',
            'get_active_vpc_peer_link', 'get_interface_running_config',
@@ -282,7 +282,7 @@ def get_vlan_config_commands(device, vlan, vid):
     """
     vlan = dict(vlan)
 
-    if 'admin_state' in vlan.keys():
+    if 'admin_state' in list(vlan.keys()):
         vlan['admin_state'] = _modify_admin_state(vlan['admin_state'])
 
     VLAN_ARGS = {
@@ -294,7 +294,7 @@ def get_vlan_config_commands(device, vlan, vid):
 
     commands = []
 
-    for param, value in vlan.iteritems():
+    for param, value in vlan.items():
         # The value check is needed, otherwise 'null' is used as a
         # value for 'name'
         # Other option is to pop null/none values from vlan
@@ -618,7 +618,7 @@ def get_interface_config_commands(device, interface, intf):
 
     commands = []
     interface = dict(interface)
-    for attribute, value in interface.iteritems():
+    for attribute, value in interface.items():
         command = None
         if attribute == 'admin_state':
             if value == 'up':
@@ -758,7 +758,7 @@ def get_config_ipv4_commands(delta, interface, existing):
     # loop used in the situation that just an IP address or just a
     # mask is changing, not both.
     for each in ['ip_addr', 'mask']:
-        if each not in delta.keys():
+        if each not in list(delta.keys()):
             delta[each] = existing[each]
 
     command = 'ip address {ip_addr}/{mask}'.format(**delta)
@@ -924,7 +924,7 @@ def get_switchport_config_commands(device, switchport, port):
 
     commands = []
     switchport = dict(switchport)
-    for param, value in switchport.iteritems():
+    for param, value in switchport.items():
         command = CONFIG_ARGS.get(param, 'DNE').format(**switchport)
         if command and command != 'DNE':
             commands.append(command)
@@ -1021,7 +1021,7 @@ def remove_switchport_config(device, switchport, port):
 
     commands = []
 
-    for param, value in switchport.iteritems():
+    for param, value in switchport.items():
         if param == 'mode' and value == 'access':
             # this is making it so that 'no switchport mode access' is added
             # to command list
@@ -1145,7 +1145,7 @@ def get_portchannel(device, group):
         # Each member should have the same mode
         # This is just to verify that.
         modes = set()
-        for each, value in member_dictionary.iteritems():
+        for each, value in member_dictionary.items():
             modes.update([value['mode']])
         if len(modes) == 1:
             portchannel['mode'] = value['mode']
@@ -1313,7 +1313,7 @@ def get_commands_if_mode_change(proposed, existing, group, mode):
     members_dict = existing['members_detail']
     members_with_mode_change = []
 
-    for interface, values in members_dict.iteritems():
+    for interface, values in members_dict.items():
         if interface in proposed_members \
                 and (interface not in members_to_remove_list):
             # Could probabaly make an assumption after checking one instead
@@ -1643,7 +1643,7 @@ def get_commands_to_config_vpc(vpc, domain, existing):
         'auto_recovery': '{ar} auto-recovery',
         }
 
-    for param, value in vpc.iteritems():
+    for param, value in vpc.items():
         command = CONFIG_ARGS.get(param, 'DNE').format(**vpc)
         if command and command != 'DNE':
             commands.append(command.strip())
@@ -1806,7 +1806,7 @@ def get_portchannel_vpc_config(device, portchannel):
             return 'peer-link'
 
     mapping = get_existing_portchannel_to_vpc_mappings(device)
-    for vpc, port_channel in mapping.iteritems():
+    for vpc, port_channel in mapping.items():
         port_ch = str(port_channel[2:])
         if port_ch == portchannel:
             return str(vpc)
@@ -2189,7 +2189,7 @@ def get_commands_config_hsrp(delta, interface, args):
 
     commands = []
 
-    for param, value in delta.iteritems():
+    for param, value in delta.items():
 
         command = CONFIG_ARGS.get(param, 'DNE').format(**delta)
         if command and command != 'DNE':
@@ -2825,7 +2825,7 @@ def get_commands_config_udld_global(delta):
         'reset': 'udld reset'
     }
     commands = []
-    for param, value in delta.iteritems():
+    for param, value in delta.items():
         if param == 'aggressive':
             if value == 'enabled':
                 command = 'udld aggressive'
@@ -2857,7 +2857,7 @@ def get_commands_remove_udld_global(delta):
         'msg_time': 'no udld message-time {msg_time}',
     }
     commands = []
-    for param, value in delta.iteritems():
+    for param, value in delta.items():
         command = CONFIG_ARGS.get(param, 'DNE').format(**delta)
         if command and command != 'DNE':
             commands.append(command)
@@ -2937,7 +2937,7 @@ def get_commands_config_mtu(delta, interface):
     }
 
     commands = []
-    for param, value in delta.iteritems():
+    for param, value in delta.items():
         command = CONFIG_ARGS.get(param, 'DNE').format(**delta)
         if command and command != 'DNE':
             commands.append(command)
@@ -2967,7 +2967,7 @@ def get_commands_remove_mtu(delta, interface):
         'sysmtu': 'no system jumbomtu {sysmtu}',
     }
     commands = []
-    for param, value in delta.iteritems():
+    for param, value in delta.items():
         command = CONFIG_ARGS.get(param, 'DNE').format(**delta)
         if command and command != 'DNE':
             commands.append(command)
@@ -3005,7 +3005,7 @@ def get_feature_list(device):
             tmp = {}
             split_line = line.split(' ')
             feat = split_line[0].strip()
-            print feat
+            print (feat)
             tmp['cfcFeatureCtrlName2'] = feat
             features.append(tmp)
     except:

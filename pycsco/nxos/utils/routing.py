@@ -4,9 +4,9 @@ from pycsco.lib import ipaddr
 try:
     import xmltodict
 except ImportError as e:
-    print '*' * 30
-    print e
-    print '*' * 30
+    print(('*' * 30))
+    print (e)
+    print(('*' * 30))
 
 
 __all__ = ['normalize_prefix', 'get_static_routes']

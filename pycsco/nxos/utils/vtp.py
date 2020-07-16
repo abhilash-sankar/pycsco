@@ -1,9 +1,9 @@
 try:
     import xmltodict
 except ImportError as e:
-    print '*' * 30
-    print e
-    print '*' * 30
+    print(('*' * 30))
+    print (e)
+    print(('*' * 30))
 
 __all__ = ['get_vtp_current_cfg', 'get_vtp_password']
 
