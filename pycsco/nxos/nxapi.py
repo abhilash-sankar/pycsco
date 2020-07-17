@@ -8,12 +8,12 @@ try:
     import socket
     import http.client
     import urllib.request
+    from urllib.request import urlopen, Request
     from http.client import HTTPConnection, HTTPS_PORT
     import ssl
     import io
     import json
     import requests
-    from requests.auth import HTTPBasicAuth
 
 except ImportError as e:
     print ('***************************')
@@ -138,19 +138,18 @@ class RespFetcher:
         cookie,
         timeout,
     ):
-
-
-
-        auth= HTTPBasicAuth(self.username, self.password)
-        headers = {
-        	'Content-Type': 'application/xml',
-        	'Accept':'application/xml'
-        }
-        response =requests.post(self.url,data=req_str, headers=headers, auth=auth)
-
-        resp_str = response.text
-        resp_headers = response.headers
-        return (resp_headers, resp_str)
+        req_str = req_str.encode('utf8')
+        req = Request(self.url, req_str)
+        req.add_header('Authorization', 'Basic %s' % self.base64_str)
+        req.add_header('Cookie', '%s' % cookie)
+        try:
+                with contextlib.closing(urlopen(req, timeout=timeout)) as resp:
+                        resp_str = resp.read()
+                        resp_headers = resp.info()
+                        return (resp_headers, resp_str)
+        except socket.timeout as e:
+            print('Req timeout')
+            raise
 
 
 class RespFetcherHttps:
